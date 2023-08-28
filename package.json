@@ -1,0 +1,20 @@
+{
+  "name": "tut",
+  "version": "1.0.0",
+  "description": "Simple Rest API",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Shiva",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.4.3",
+    "mongoose-extend-schema": "^1.0.0",
+    "nodemon": "^3.0.1"
+  }
+}
