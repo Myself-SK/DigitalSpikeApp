@@ -56,17 +56,92 @@ TeamRouter.post("/createTeam", async (req, res) => {
   }
 });
 
+TeamRouter.get("/getAll", async (req, res) => {
+  try {
+    const teams = await Team.find();
+    allTeam = [];
+    for (const team of teams) {
+      empList = [];
+      for (emp in team.teamMembers) {
+        console.log(emp);
+        const empl = await Employee.findById(team.teamMembers[emp]);
+        empList.push(empl);
+      }
+      proList = [];
+      for (pro in team.projects) {
+        const proj = await Project.findById(team.projects[pro]);
+        proList.push(proj);
+      }
+      const teamLead = await TeamLeader.findById(team.teamLeader);
+      const teamData = {
+        teamName: team.teamName,
+        teamLeader: teamLead,
+        teamMembers: empList,
+        projects: proList,
+        _id: team._id,
+      };
+      allTeam.push(teamData);
+    }
+    res.status(200).json(allTeam);
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
+});
+
+TeamRouter.get("/getTeam/:id", async (req, res) => {
+  try {
+    const team = await Team.findById(req.params.id);
+    empList = [];
+    for (emp in team.teamMembers) {
+      console.log(emp);
+      const empl = await Employee.findById(team.teamMembers[emp]);
+      empList.push(empl);
+    }
+    proList = [];
+    for (pro in team.projects) {
+      const proj = await Project.findById(team.projects[pro]);
+      proList.push(proj);
+    }
+    const teamLead = await TeamLeader.findById(team.teamLeader);
+    const teamData = {
+      teamName: team.teamName,
+      teamLeader: teamLead,
+      teamMembers: empList,
+      projects: proList,
+      _id: team._id,
+    };
+    console.log(teamData);
+    res.json(teamData);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 TeamRouter.delete("/deleteTeam/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Team.findByIdAndDelete(id);
-    console.log(data);
+    const data = await Team.findById(id);
+    console.log(data.projects);
+    for (pro of data.projects) {
+      const pr = await Project.findById(pro);
+      if (pr.status != "completed" || pr.status != "Completed") {
+        const proj = await Project.findOneAndUpdate(
+          {
+            _id: pro,
+          },
+          {
+            status: "pending",
+          }
+        );
+      }
+    }
+    const newData = await Team.findByIdAndDelete(id);
     res.send(`Document with ${data.teamName} has been deleted..`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
-
-
 
 module.exports = TeamRouter;
