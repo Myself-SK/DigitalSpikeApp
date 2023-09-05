@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const mongoData = process.env.DATABASE_NAME;
 mongoose.connect(mongoData);
@@ -14,6 +15,7 @@ db.once("connected", () => {
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 const homeRoutes = require("./User/routes");
 const projectRoutes = require("./Project/routes");
 const employeeRoutes = require("./Employee/routes");
