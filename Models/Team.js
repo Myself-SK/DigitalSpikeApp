@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const TeamScheme = new mongoose.Schema({
   teamName: {
     type: "string",
@@ -9,7 +10,8 @@ const TeamScheme = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     required: true,
   },
-  employees: [mongoose.SchemaType.ObjectId],
-  projects: [mongoose.SchemaType.ObjectId],
+  teamMembers: [mongoose.Schema.Types.ObjectId],
+  projects: [mongoose.Schema.Types.ObjectId],
 });
+
 module.exports = mongoose.model("Team", TeamScheme);

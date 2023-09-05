@@ -21,13 +21,14 @@ const cliRoutes = require("./Client/routes");
 const loginRoutes = require("./Login/routes");
 const marketRoutes = require("./Market/routes");
 const tlRoutes = require("./TeamLeader/routes");
-
+const teamRoutes = require("./Team/routes");
 app.use("/admin", homeRoutes);
 app.use("/project", projectRoutes);
 app.use("/employee", employeeRoutes);
 app.use("/client", cliRoutes);
 app.use("/market", marketRoutes);
 app.use("/tl", tlRoutes);
+app.use("/team", teamRoutes);
 app.use("", loginRoutes);
 
 app.listen(3000, () => {

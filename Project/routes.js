@@ -24,6 +24,39 @@ ProRouter.get("/getAll", async (req, res) => {
         domainCharge: project.domainCharge,
         hostingCharge: project.hostingCharge,
         serviceCharge: project.serviceCharge,
+        status: project.status,
+        credentials: marketDetails.credentials,
+      };
+      allProjects.push(updatedData);
+    }
+    res.status(200).json(allProjects);
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
+});
+
+ProRouter.get("/ProjectStatus/:status", async (req, res) => {
+  try {
+    const projects = await Project.find({ status: req.params.status });
+    allProjects = [];
+    for (const project of projects) {
+      var marketDetails = await Market.findOne({ project: project._id });
+      const cliData = await Client.findById(project.clientName);
+      const updatedData = {
+        _id: project._id,
+        clientName: cliData,
+        orgName: project.orgName,
+        category: project.category,
+        domainName: project.domainName,
+        startDate: project.startDate,
+        renewalDate: project.renewalDate,
+        hostingType: project.hostingType,
+        domainCharge: project.domainCharge,
+        hostingCharge: project.hostingCharge,
+        serviceCharge: project.serviceCharge,
+        status: project.status,
         credentials: marketDetails.credentials,
       };
       allProjects.push(updatedData);
@@ -100,6 +133,7 @@ ProRouter.get("/getProject/:id", async (req, res) => {
       domainCharge: data.domainCharge,
       hostingCharge: data.hostingCharge,
       serviceCharge: data.serviceCharge,
+      status: data.status,
       credentials: marketDetails.credentials,
     };
     res.json(updatedData);
@@ -126,29 +160,9 @@ ProRouter.put("/updateProject/:id", async (req, res) => {
           credentials: credentialsDetails,
         }
       );
-      // market.updateOne
-      // console.log(credentialsDetails);
-      console.log(market);
       if (user != null && market != null) {
         res.status(200).json({ message: "Project Updated Successfully" });
       }
-
-      //     const projectData = await Project.findOne({ domainName: req.body.project });
-      //   if (projectData != null) {
-      //     updatedData.project = projectData._id;
-      //     const user = await Market.findOneAndUpdate({ _id: id }, req.body);
-      //     const data = await Market.findById(req.params.id);
-      //     res.json(data);
-      //   } else {
-      //     res.status(404).json({ message: "Project Not Found" });
-      //   }
-      // }
-
-      //     const data = await Project.findById(req.params.id);
-
-      //     res.json(data);
-      //   } else {
-      //     res.status(404).json({ message: "Client Not Found" });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
