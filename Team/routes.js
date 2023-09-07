@@ -10,33 +10,31 @@ TeamRouter.post("/createTeam", async (req, res) => {
   try {
     empList = [];
     proList = [];
-
-    const employee = await Employee.find({
-      userID__in: req.params.teamMembers,
-    });
-    console.log(employee);
-    for (emp of employee) {
-      empList.push(emp._id);
+    for (emp of req.body.teamMembers) {
+      const employee = await Employee.findOne({
+        userID: emp,
+      });
+      empList.push(employee._id);
     }
-    const project = await Project.find({
-      domainName__in: req.body.project,
-    });
+    for (pro of req.body.projects) {
+      const proj = await Project.findOne({
+        domainName: pro,
+      });
+      proList.push(proj._id);
+    }
 
+    console.log(proList);
+
+    console.log(empList);
     const teamLead = await TeamLeader.findOne({
       userID: req.body.teamLeader,
     });
-    console.log(empList);
-
-    for (pro of project) {
-      proList.push(pro._id);
-    }
     const team = new Team({
       teamName: req.body.teamName,
       teamLeader: teamLead._id,
       teamMembers: empList,
       projects: proList,
     });
-    console.log(team);
     await team.save();
     for (proID of proList) {
       const proj = await Project.findOneAndUpdate(
@@ -117,6 +115,13 @@ TeamRouter.get("/getTeam/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+
+TeamRouter.post("/addProject/:id", async (req, res) => {
+  try {
+    const team = await Team.findById(req.params.id);
+    console.log(team);
+  } catch (err) {}
 });
 
 TeamRouter.delete("/deleteTeam/:id", async (req, res) => {
