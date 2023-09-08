@@ -25,6 +25,7 @@ const marketRoutes = require("./Market/routes");
 const tlRoutes = require("./TeamLeader/routes");
 const teamRoutes = require("./Team/routes");
 const dashboardRoutes = require("./Dashboard/routes");
+const leaveRoutes = require("./Leave/routes");
 
 app.use("/admin", homeRoutes);
 app.use("/project", projectRoutes);
@@ -34,6 +35,7 @@ app.use("/market", marketRoutes);
 app.use("/tl", tlRoutes);
 app.use("/team", teamRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/leave", leaveRoutes);
 app.use("", loginRoutes);
 
 app.listen(3000, () => {

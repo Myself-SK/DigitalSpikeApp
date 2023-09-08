@@ -172,11 +172,19 @@ ProRouter.put("/updateProject/:id", async (req, res) => {
 ProRouter.delete("/deleteProject/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Project.findByIdAndDelete(id);
-    console.log(data);
-    const market = await Market.findOneAndDelete({ project: req.params.id });
-    console.log(market);
-    res.send(`Document with ${data.domainName} has been deleted..`);
+    const projdata = await Project.findById(id);
+    if (projdata.status != "pending") {
+      res.status(400).json({
+        message: "Project has been assigned to team remove it and try again",
+      });
+    } else {
+      const data = await Project.findByIdAndDelete(id);
+      console.log(data);
+
+      const market = await Market.findOneAndDelete({ project: req.params.id });
+      console.log(market);
+      res.send(`Document with ${data.domainName} has been deleted..`);
+    }
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

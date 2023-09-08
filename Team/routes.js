@@ -118,18 +118,24 @@ TeamRouter.get("/getTeam/:id", async (req, res) => {
 });
 
 TeamRouter.post("/addProject/:id", async (req, res) => {
+  function removeDuplicates(arr) {
+    return arr.filter((item, index) => arr.indexOf(item) === index);
+  }
   try {
     const team = await Team.findById(req.params.id);
     proList = [];
     for (pro of team.projects) {
       proList.push(pro);
     }
+
     for (pro of req.body.projects) {
       const proj = await Project.findOne({
         domainName: pro,
       });
       proList.push(proj._id);
     }
+    console.log(removeDuplicates(proList));
+
     const updatedTeam = await Team.findOneAndUpdate(
       {
         _id: req.params.id,
@@ -139,6 +145,16 @@ TeamRouter.post("/addProject/:id", async (req, res) => {
       }
     );
     res.status(200).json({ message: "Projects added Successfully" });
+    for (proID of proList) {
+      const proj = await Project.findOneAndUpdate(
+        {
+          _id: proID,
+        },
+        {
+          status: "allocated",
+        }
+      );
+    }
   } catch (err) {
     res.status(400).json({
       message: err.message,
