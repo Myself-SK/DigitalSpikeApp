@@ -1,5 +1,3 @@
-const Client = require("../Models/Client");
-
 const mongoose = require("mongoose");
 const ProjectSchema = new mongoose.Schema({
   clientName: {
