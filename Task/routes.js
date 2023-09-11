@@ -7,7 +7,7 @@ const TaskRouter = express.Router();
 
 TaskRouter.post("/addTask", async (req, res) => {
   try {
-    const team = await Team.findOne({ teamName: req.body.team });
+    const team = await Team.findOne({ _id: req.body.team });
     const project = await Project.findOne({ domainName: req.body.project });
     const employee = await Employee.findOne({ userID: req.body.employee });
     const task = new Task({
