@@ -17,6 +17,7 @@ TaskRouter.post("/addTask", async (req, res) => {
       task: req.body.task,
       deadline: new Date(req.body.deadline),
       description: req.body.description,
+      statusDescription: "",
     });
     await task.save();
     res.status(200).json({ message: "Task has been assigned Successfully" });
@@ -61,11 +62,42 @@ TaskRouter.delete("/deleteTask/:id", async (req, res) => {
   }
 });
 
-TaskRouter.get("/getTasks", async (req, res) => {
+TaskRouter.get("/getTask/:id", async (req, res) => {
   try {
-    const team = await Team.findOne({ teamName: req.body.team });
+    const task = await Task.findById(req.params.id);
+    if (task != null) {
+      res.status(200).json({
+        _id: task._id,
+        team: await Team.findOne({ _id: task.team }),
+        project: await Project.findOne({ _id: task.project }),
+        employee: await Employee.findOne({ _id: task.employee }),
+        task: task.task,
+        deadline: task.deadline,
+        description: task.description,
+        status: task.status,
+        statusDescription: task.statusDescription,
+      });
+    } else {
+      res.status(404).json({ message: "Task not Found" });
+    }
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
+});
+
+TaskRouter.post("/getTasks", async (req, res) => {
+  try {
+    console.log(req.body);
+    const team = await Team.findOne({ _id: req.body.team });
+    console.log(team);
+
     const project = await Project.findOne({ domainName: req.body.project });
+    console.log(project);
     const tasks = await Task.find({ team: team._id, project: project._id });
+    console.log(tasks);
+
     allTasks = [];
     for (task of tasks) {
       allTasks.push({
@@ -80,6 +112,7 @@ TaskRouter.get("/getTasks", async (req, res) => {
         statusDescription: task.statusDescription,
       });
     }
+    console.log("all tasks", allTasks);
     res.status(200).json(allTasks);
   } catch (err) {
     res.status(400).json({
@@ -88,9 +121,9 @@ TaskRouter.get("/getTasks", async (req, res) => {
   }
 });
 
-TaskRouter.get("/getEmployeeTasks", async (req, res) => {
+TaskRouter.post("/getEmployeeTasks", async (req, res) => {
   try {
-    const team = await Team.findOne({ teamName: req.body.team });
+    const team = await Team.findOne({ _id: req.body.team });
     const project = await Project.findOne({ domainName: req.body.project });
     const employee = await Employee.findOne({ userID: req.body.employee });
     const tasks = await Task.find({
@@ -98,6 +131,7 @@ TaskRouter.get("/getEmployeeTasks", async (req, res) => {
       project: project._id,
       employee: employee._id,
     });
+    console.log("All Tasks of Employee", tasks);
     allTasks = [];
     for (task of tasks) {
       allTasks.push({
